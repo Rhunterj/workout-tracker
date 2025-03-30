@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Workout {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId // MongoDB specific ID handling
+  name      String
+  date      DateTime
+  notes     String?
+  exercises Exercise[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Exercise {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId // MongoDB specific ID handling
+  name      String
+  notes     String?
+  sets      Json     // Still reasonable to use Json type for sets
+  workoutId String   @db.ObjectId // Relates to Workout's ObjectId
+  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // No need for @@index here like in SQL, MongoDB handles indexing differently.
+  // You might define indexes later directly in MongoDB or via Prisma schema features if needed.
+}
+
+// Again, 'Set' type is embedded within the 'sets' Json field here.
