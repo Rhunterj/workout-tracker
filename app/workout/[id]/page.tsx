@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
@@ -24,7 +24,8 @@ import {
 import ExerciseItem from "@/components/exercise-item"
 import MainNav from "@/components/main-nav"
 
-export default function WorkoutDetailPage({ params }: { params: { id: string } }) {
+export default function WorkoutDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const router = useRouter()
   const { toast } = useToast()
   const [workout, setWorkout] = useState<Workout | null>(null)

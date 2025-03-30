@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation"
 import { ArrowLeft, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,8 @@ import ExerciseProgressChart from "@/components/exercise-progress-chart"
 import ExerciseHistoryTable from "@/components/exercise-history-table"
 import MainNav from "@/components/main-nav"
 
-export default function ExerciseProgressPage({ params }: { params: { name: string } }) {
+export default function ExerciseProgressPage(props: { params: Promise<{ name: string }> }) {
+  const params = use(props.params);
   const router = useRouter()
   const { toast } = useToast()
   const [history, setHistory] = useState([])

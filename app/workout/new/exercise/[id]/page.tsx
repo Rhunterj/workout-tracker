@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
@@ -13,7 +13,8 @@ import type { Exercise, Set } from "@/lib/types";
 import { addOrUpdateExercise, getExerciseById } from "@/lib/workout-service";
 import MainNav from "@/components/main-nav";
 
-export default function ExercisePage({ params }: { params: { id: string } }) {
+export default function ExercisePage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();

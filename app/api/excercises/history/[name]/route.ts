@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import type { Set } from "@/lib/types"; // Assuming Set type is here
 
-export async function GET(
-  request: Request,
-  { params }: { params: { name: string } }
-) {
+export async function GET(request: Request, props: { params: Promise<{ name: string }> }) {
+  const params = await props.params;
   // Decode the name in case it contains special characters
   const exerciseName = decodeURIComponent(params.name);
 
