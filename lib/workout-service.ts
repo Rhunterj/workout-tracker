@@ -1,6 +1,6 @@
 "use client";
 
-import type { Exercise, Workout } from "./types";
+import type { Exercise, ExerciseHistory, Workout } from "./types";
 
 // LOCAL STORAGE IS STILL USED FOR THE *CURRENT*, UNSAVED WORKOUT
 const CURRENT_WORKOUT_KEY = "workout-tracker-current";
@@ -139,10 +139,10 @@ export const getCurrentExercises = async (): Promise<Exercise[]> => {
 // Get exercise history across all workouts from the API
 export const getExerciseHistory = async (
   exerciseName: string
-): Promise<any[]> => {
+): Promise<ExerciseHistory[]> => {
   // Encode the exercise name for the URL path
   const encodedName = encodeURIComponent(exerciseName);
-  return fetchApi<any[]>(`/api/exercises/history/${encodedName}`);
+  return fetchApi<ExerciseHistory[]>(`/api/exercises/history/${encodedName}`);
 };
 
 // Get all exercises from the API

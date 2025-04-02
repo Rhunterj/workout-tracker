@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import type { Set } from "@/lib/types"; // Assuming Set type is here
+import type { Set } from "@/lib/types";
 
-export async function GET(request: Request, props: { params: Promise<{ name: string }> }) {
+export async function GET(
+  request: Request,
+  props: { params: Promise<{ name: string }> }
+) {
   const params = await props.params;
   // Decode the name in case it contains special characters
   const exerciseName = decodeURIComponent(params.name);
@@ -15,47 +18,49 @@ export async function GET(request: Request, props: { params: Promise<{ name: str
   }
 
   try {
-    // Find workouts containing the exercise
-    const workouts = await prisma.workout.findMany({
+    // Find all exercises with the given name
+    const exercises = await prisma.exercise.findMany({
       where: {
-        exercises: {
-          some: {
-            name: exerciseName,
-          },
-        },
+        name: exerciseName,
       },
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        exercises: {
-          where: {
-            name: exerciseName,
-          },
+      include: {
+        workout: {
           select: {
-            sets: true,
+            id: true,
+            name: true,
+            date: true,
           },
         },
       },
       orderBy: {
-        date: "asc", // Oldest first for history
+        workout: {
+          date: "asc", // Oldest first for history
+        },
       },
     });
 
     // Process the results to match the desired history format
-    const history = workouts.map((workout) => {
-      // Should only be one matching exercise per workout based on the query
-      const exercise = workout.exercises[0];
-      const sets = (exercise?.sets as Set[]) || []; // Type assertion
+    const history = exercises.map((exercise) => {
+      // Parse the JSON sets data and ensure it matches the Set type
+      const rawSets = exercise.sets as unknown as Array<{
+        id: string;
+        reps: number;
+        weight: number;
+      }>;
+      const sets: Set[] = rawSets.map((set) => ({
+        id: set.id,
+        reps: set.reps,
+        weight: set.weight,
+      }));
 
       // Find max weight
       const maxWeight =
         sets.length > 0 ? Math.max(...sets.map((set) => set.weight)) : 0;
 
       return {
-        date: workout.date,
-        workoutId: workout.id,
-        workoutName: workout.name,
+        date: exercise.workout.date,
+        workoutId: exercise.workout.id,
+        workoutName: exercise.workout.name,
         maxWeight,
         sets: sets,
       };
@@ -73,4 +78,3 @@ export async function GET(request: Request, props: { params: Promise<{ name: str
     );
   }
 }
-

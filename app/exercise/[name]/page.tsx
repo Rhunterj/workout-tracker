@@ -1,11 +1,10 @@
 import { ExerciseProgressView } from "@/components/exercise-progress-view";
 import MainNavWrapper from "@/components/main-nav-wrapper";
 
-export default function ExerciseProgressPage({
-  params,
-}: {
-  params: { name: string };
+export default async function ExerciseProgressPage(props: {
+  params: Promise<{ name: string }>;
 }) {
+  const params = await props.params;
   const exerciseName = decodeURIComponent(params.name);
 
   return (

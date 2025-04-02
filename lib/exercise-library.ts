@@ -38,7 +38,6 @@ const exerciseLibrary: ExerciseTemplate[] = [
   { name: "Glute Bridge", muscleGroup: "Glutes" },
   { name: "Hip Thrust", muscleGroup: "Glutes" },
   { name: "Sumo Deadlift", muscleGroup: "Glutes" },
-  { name: "Romanian Deadlift", muscleGroup: "Glutes" },
   { name: "Glute Kickback", muscleGroup: "Glutes" },
 
   // Shoulders
