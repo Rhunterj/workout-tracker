@@ -1,8 +1,8 @@
 // A library of common exercises to choose from
 
 interface ExerciseTemplate {
-  name: string
-  muscleGroup: string
+  name: string;
+  muscleGroup: string;
 }
 
 const exerciseLibrary: ExerciseTemplate[] = [
@@ -33,6 +33,14 @@ const exerciseLibrary: ExerciseTemplate[] = [
   { name: "Lunge", muscleGroup: "Legs" },
   { name: "Romanian Deadlift", muscleGroup: "Hamstrings" },
 
+  // Glutes
+  { name: "Pauliina's stepups", muscleGroup: "Glutes" },
+  { name: "Glute Bridge", muscleGroup: "Glutes" },
+  { name: "Hip Thrust", muscleGroup: "Glutes" },
+  { name: "Sumo Deadlift", muscleGroup: "Glutes" },
+  { name: "Romanian Deadlift", muscleGroup: "Glutes" },
+  { name: "Glute Kickback", muscleGroup: "Glutes" },
+
   // Shoulders
   { name: "Overhead Press", muscleGroup: "Shoulders" },
   { name: "Lateral Raise", muscleGroup: "Shoulders" },
@@ -55,9 +63,9 @@ const exerciseLibrary: ExerciseTemplate[] = [
   { name: "Russian Twist", muscleGroup: "Obliques" },
   { name: "Leg Raise", muscleGroup: "Lower Abs" },
   { name: "Ab Rollout", muscleGroup: "Core" },
-]
+];
 
 export const getExerciseLibrary = (): ExerciseTemplate[] => {
-  return exerciseLibrary
-}
+  return exerciseLibrary;
+};
 

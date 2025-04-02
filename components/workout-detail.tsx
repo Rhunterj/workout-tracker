@@ -114,12 +114,15 @@ export function WorkoutDetail({ id }: { id: string }) {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Exercises</h2>
-          <Link href={`/workout/${id}/add-exercise`}>
-            <Button variant="outline" size="sm" className="gap-1">
-              <Plus className="h-4 w-4" />
-              Add Exercise
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={() => router.push(`/workout/${id}/add-exercise`)}
+          >
+            <Plus className="h-4 w-4" />
+            Add Exercise
+          </Button>
         </div>
 
         {workout.exercises.length === 0 ? (

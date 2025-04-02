@@ -145,3 +145,8 @@ export const getExerciseHistory = async (
   return fetchApi<any[]>(`/api/exercises/history/${encodedName}`);
 };
 
+// Get all exercises from the API
+export const getExercises = async (): Promise<Exercise[]> => {
+  return fetchApi<Exercise[]>("/api/exercises");
+};
+

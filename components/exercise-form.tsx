@@ -8,15 +8,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import type { Exercise, Set } from "@/lib/types";
-import { addOrUpdateExercise, getExerciseById } from "@/lib/workout-service";
+import {
+  addOrUpdateExercise,
+  getExerciseById,
+  getExercises,
+} from "@/lib/workout-service";
 
 interface ExerciseFormProps {
   id: string;
+  workoutId?: string;
 }
 
-export function ExerciseForm({ id }: ExerciseFormProps) {
+export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -30,8 +42,20 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
     sets: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
 
   useEffect(() => {
+    // Load existing exercises for the dropdown
+    const loadExercises = async () => {
+      try {
+        const data = await getExercises();
+        setExercises(data);
+      } catch (error) {
+        console.error("Error loading exercises:", error);
+      }
+    };
+    loadExercises();
+
     // If it's not a new exercise, try to load existing data
     if (!isNewExercise) {
       const loadExercise = async () => {
@@ -46,7 +70,7 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
             description: "Please try again later",
             variant: "destructive",
           });
-          router.push("/workout/new");
+          router.push(workoutId ? `/workout/${workoutId}` : "/workout/new");
         }
       };
       loadExercise();
@@ -54,7 +78,7 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
       // For new exercises, add an initial empty set
       addSet();
     }
-  }, [isNewExercise, id, router, toast]);
+  }, [isNewExercise, id, router, toast, workoutId]);
 
   const addSet = () => {
     const newSet: Set = {
@@ -79,6 +103,20 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
   const removeSet = (setId: string) => {
     const updatedSets = exercise.sets.filter((set) => set.id !== setId);
     setExercise({ ...exercise, sets: updatedSets });
+  };
+
+  const handleExerciseSelect = (exerciseId: string) => {
+    const selectedExercise = exercises.find((e) => e.id === exerciseId);
+    if (selectedExercise) {
+      setExercise({
+        ...selectedExercise,
+        id: Date.now().toString(), // Generate new ID for the copy
+        sets: selectedExercise.sets.map((set) => ({
+          ...set,
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate new IDs for sets
+        })),
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -108,7 +146,7 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
         title: "Exercise saved",
         description: "Your exercise has been added to the workout",
       });
-      router.push("/workout/new");
+      router.push(workoutId ? `/workout/${workoutId}` : "/workout/new");
     } catch (error) {
       toast({
         title: "Error saving exercise",
@@ -123,7 +161,7 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
   return (
     <>
       <div className="flex items-center mb-6">
-        <Link href="/workout/new">
+        <Link href={workoutId ? `/workout/${workoutId}` : "/workout/new"}>
           <Button variant="ghost" size="icon" className="mr-2">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -139,6 +177,23 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
+            {isNewExercise ? (
+              <div className="grid gap-2">
+                <Label htmlFor="exercise-select">Select Exercise</Label>
+                <Select onValueChange={handleExerciseSelect}>
+                  <SelectTrigger id="exercise-select">
+                    <SelectValue placeholder="Select an exercise" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {exercises.map((exercise) => (
+                      <SelectItem key={exercise.id} value={exercise.id}>
+                        {exercise.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : null}
             <div className="grid gap-2">
               <Label htmlFor="exercise-name">Exercise Name</Label>
               <Input
@@ -239,7 +294,9 @@ export function ExerciseForm({ id }: ExerciseFormProps) {
             variant="outline"
             size="lg"
             className="w-1/3"
-            onClick={() => router.push("/workout/new")}
+            onClick={() =>
+              router.push(workoutId ? `/workout/${workoutId}` : "/workout/new")
+            }
           >
             Cancel
           </Button>
