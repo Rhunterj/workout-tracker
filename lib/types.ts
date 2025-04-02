@@ -19,3 +19,14 @@ export interface Workout {
   totalSets: number;
 }
 
+export interface ExerciseHistory {
+  date: string;
+  workoutId: string;
+  workoutName: string;
+  maxWeight: number;
+  sets: Array<{
+    reps: number;
+    weight: number;
+  }>;
+}
+

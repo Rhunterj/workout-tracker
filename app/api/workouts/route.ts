@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import type { Workout } from "@/lib/types"; // Assuming your types are here
+import { auth } from "@/auth";
 
-// GET all workouts
+// GET all workouts FOR THE LOGGED IN USER
 export async function GET() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    // Not authenticated or session missing ID
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const workouts = await prisma.workout.findMany({
+      where: {
+        userId: session.user.id, // Filter by logged-in user's ID
+      },
       orderBy: {
         date: "desc", // Show newest first
       },
@@ -32,10 +43,19 @@ export async function GET() {
   }
 }
 
-// POST a new workout
+// POST a new workout FOR THE LOGGED IN USER
 export async function POST(request: Request) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const body: Workout = await request.json();
+    const body: Omit<
+      Workout,
+      "id" | "createdAt" | "updatedAt" | "userId" | "user"
+    > = await request.json();
 
     // Basic validation
     if (!body.name || !body.date || !body.exercises) {
@@ -49,7 +69,8 @@ export async function POST(request: Request) {
       data: {
         name: body.name,
         date: new Date(body.date), // Ensure date is a Date object
-        notes: body.notes,
+        // Associate with the logged-in user
+        userId: session.user.id,
         // Create exercises along with the workout
         exercises: {
           create: body.exercises.map((ex) => ({
@@ -67,8 +88,16 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(newWorkout, { status: 201 });
   } catch (error) {
-    console.error("Error creating workout:", error);
-    // Check for Prisma-specific errors if needed
+    console.error("Caught an error creating workout.");
+    if (error instanceof Error) {
+      console.error("Error Name:", error.name);
+      console.error("Error Message:", error.message);
+      if (error.stack) {
+        console.error("Error Stack:", error.stack);
+      }
+    } else {
+      console.error("Raw error object (not an Error instance):", error);
+    }
     return NextResponse.json(
       { message: "Error creating workout" },
       { status: 500 }

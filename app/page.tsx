@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
-import Link from "next/link"
-import WorkoutList from "@/components/workout-list"
-import MainNav from "@/components/main-nav"
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import Link from "next/link";
+import WorkoutList from "@/components/workout-list";
+import MainNavWrapper from "@/components/main-nav-wrapper";
 
 export default function Home() {
   return (
@@ -34,8 +34,8 @@ export default function Home() {
         </Link>
       </div>
 
-      <MainNav />
+      <MainNavWrapper />
     </main>
-  )
+  );
 }
 

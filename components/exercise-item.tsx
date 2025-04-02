@@ -1,18 +1,24 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Pencil, Trash2, TrendingUp } from "lucide-react"
-import type { Exercise } from "@/lib/types"
-import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2, TrendingUp } from "lucide-react";
+import type { Exercise } from "@/lib/types";
+import Link from "next/link";
 
 interface ExerciseItemProps {
-  exercise: Exercise
-  onRemove: (id: string) => void
-  showProgressLink?: boolean
+  exercise: Exercise;
+  onRemove: (id: string) => void;
+  showProgressLink?: boolean;
+  readOnly?: boolean;
 }
 
-export default function ExerciseItem({ exercise, onRemove, showProgressLink = false }: ExerciseItemProps) {
+export default function ExerciseItem({
+  exercise,
+  onRemove,
+  showProgressLink = false,
+  readOnly = false,
+}: ExerciseItemProps) {
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -26,19 +32,23 @@ export default function ExerciseItem({ exercise, onRemove, showProgressLink = fa
                 </Button>
               </Link>
             )}
-            <Link href={`/workout/new/exercise/${exercise.id}`}>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive"
-              onClick={() => onRemove(exercise.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {!readOnly && (
+              <>
+                <Link href={`/workout/new/exercise/${exercise.id}`}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive"
+                  onClick={() => onRemove(exercise.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -49,17 +59,16 @@ export default function ExerciseItem({ exercise, onRemove, showProgressLink = fa
             <div className="col-span-5">Weight</div>
             <div className="col-span-6">Reps</div>
           </div>
-
-          {exercise.sets.map((set, setIndex) => (
-            <div key={set.id} className="grid grid-cols-12 gap-2 items-center">
-              <div className="col-span-1 text-sm font-medium">{setIndex + 1}</div>
-              <div className="col-span-5 text-sm">{set.weight} kg</div>
-              <div className="col-span-6 text-sm">{set.reps} reps</div>
+          {exercise.sets.map((set, index) => (
+            <div key={index} className="grid grid-cols-12 gap-2 text-sm px-2">
+              <div className="col-span-1">{index + 1}</div>
+              <div className="col-span-5">{set.weight} kg</div>
+              <div className="col-span-6">{set.reps}</div>
             </div>
           ))}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
