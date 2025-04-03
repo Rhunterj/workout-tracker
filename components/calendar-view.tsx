@@ -82,13 +82,27 @@ export function CalendarView() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Calendar</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={previousMonth}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={previousMonth}
+            name="previous month"
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={nextMonth}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={nextMonth}
+            name="next month"
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button onClick={handleAddWorkoutForDate} className="gap-2">
+          <Button
+            onClick={handleAddWorkoutForDate}
+            className="gap-2"
+            name="add workout"
+          >
             <Plus className="h-4 w-4" />
             Add Workout
           </Button>
