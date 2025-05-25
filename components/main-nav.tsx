@@ -2,25 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Home } from "lucide-react";
+import { Calendar, Dumbbell, Home, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AuthButtons } from "@/components/auth-buttons";
 
-export function MainNav({ session }: { session: any }) {
+export function MainNav() {
   const pathname = usePathname();
 
   const navItems = [
     {
       name: "Home",
-      href: "/",
+      href: "/dashboard",
       icon: <Home className="h-5 w-5" />,
-      active: pathname === "/",
+      active: pathname === "/dashboard",
     },
     {
       name: "Calendar",
       href: "/calendar",
       icon: <Calendar className="h-5 w-5" />,
       active: pathname === "/calendar",
+    },
+    {
+      name: "Progress",
+      href: "/progress",
+      icon: <Dumbbell className="h-5 w-5" />,
+      active: pathname === "/progress",
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: <Settings className="h-5 w-5" />,
+      active: pathname === "/settings",
     },
   ];
 
@@ -41,7 +52,6 @@ export function MainNav({ session }: { session: any }) {
               <span className="text-xs mt-1">{item.name}</span>
             </Link>
           ))}
-          <AuthButtons session={session} />
         </div>
       </div>
     </nav>

@@ -140,7 +140,7 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
 
     setIsSubmitting(true);
     try {
-      await addOrUpdateExercise(exercise);
+      await addOrUpdateExercise(exercise, workoutId);
 
       toast({
         title: "Exercise saved",

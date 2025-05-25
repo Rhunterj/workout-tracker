@@ -1,23 +1,23 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 import NextAuthProvider from "@/components/providers/session-provider";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Workout Tracker",
-  description: "Track your fitness progress",
+  title: "Track Workouts",
+  description: "Track your workouts and progress",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -27,13 +27,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextAuthProvider>{children}</NextAuthProvider>
-          <Toaster />
+          <NextAuthProvider>
+            {children}
+            <Toaster />
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-
-import "./globals.css";
 

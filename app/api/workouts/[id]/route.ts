@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 // GET a single workout by ID
-export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  props: { params: Promise<{ id: string }> }
+) {
   const params = await props.params;
   const { id } = params;
   if (!id) {
@@ -47,7 +51,10 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
 }
 
 // DELETE a workout by ID
-export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: Request,
+  props: { params: Promise<{ id: string }> }
+) {
   const params = await props.params;
   const { id } = params;
   if (!id) {
@@ -91,3 +98,70 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
   }
 }
 
+// PATCH to update a workout
+export async function PATCH(
+  request: Request,
+  props: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const params = await props.params;
+  const { id } = params;
+  if (!id) {
+    return NextResponse.json(
+      { message: "Workout ID required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const body = await request.json();
+
+    // First verify the workout exists and belongs to the user
+    const existingWorkout = await prisma.workout.findUnique({
+      where: { id },
+      include: { exercises: true },
+    });
+
+    if (!existingWorkout) {
+      return NextResponse.json(
+        { message: "Workout not found" },
+        { status: 404 }
+      );
+    }
+
+    if (existingWorkout.userId !== session.user.id) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Update the workout and its exercises
+    const updatedWorkout = await prisma.workout.update({
+      where: { id },
+      data: {
+        name: body.name,
+        date: body.date,
+        exercises: {
+          deleteMany: {}, // Remove all existing exercises
+          create: body.exercises.map((exercise: any) => ({
+            name: exercise.name,
+            sets: exercise.sets,
+          })),
+        },
+      },
+      include: {
+        exercises: true,
+      },
+    });
+
+    return NextResponse.json(updatedWorkout);
+  } catch (error) {
+    console.error(`Error updating workout ${id}:`, error);
+    return NextResponse.json(
+      { message: "Error updating workout" },
+      { status: 500 }
+    );
+  }
+}

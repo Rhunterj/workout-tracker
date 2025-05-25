@@ -2,9 +2,8 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import WorkoutList from "@/components/workout-list";
-import MainNavWrapper from "@/components/main-nav-wrapper";
 
-export default function Home() {
+export default function DashboardPage() {
   return (
     <main className="container max-w-md mx-auto p-4 pb-24">
       <header className="mb-6">
@@ -33,9 +32,6 @@ export default function Home() {
           </Button>
         </Link>
       </div>
-
-      <MainNavWrapper />
     </main>
   );
 }
-

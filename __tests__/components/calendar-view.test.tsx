@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CalendarView } from "@/components/calendar-view";
 import { getWorkouts } from "@/lib/workout-service";
 
-// Mock the workout service
 vi.mock("@/lib/workout-service", () => ({
   getWorkouts: vi.fn(),
 }));
