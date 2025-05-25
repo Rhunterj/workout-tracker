@@ -1,24 +1,24 @@
-import { auth, signIn, signOut } from "@/auth";
-
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signInAction, signOutAction } from "@/app/actions/auth";
 
-export default async function AuthButton() {
-  const session = await auth();
-
+export default function AuthButton({ session }: { session: any }) {
   if (session) {
     return (
-      <Button variant="ghost" size="sm" onClick={() => signOut()}>
-        <LogOut className="mr-2 h-4 w-4" /> Sign Out
-      </Button>
+      <form action={signOutAction}>
+        <Button variant="ghost" size="sm" type="submit">
+          <LogOut className="mr-2 h-4 w-4" /> Sign Out
+        </Button>
+      </form>
     );
   }
 
   return (
-    <Button variant="ghost" size="sm" onClick={() => signIn("google")}>
-      <LogIn className="mr-2 h-4 w-4" /> Sign In with Google
-    </Button>
+    <form action={signInAction}>
+      <Button variant="ghost" size="sm" type="submit">
+        <LogIn className="mr-2 h-4 w-4" /> Sign In
+      </Button>
+    </form>
   );
 }
 

@@ -1,20 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { signInAction } from "@/app/actions/auth";
 
 export default function Home() {
   return (
-    <main className="container max-w-md mx-auto p-4 min-h-screen flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl font-bold mb-4">Workout Tracker</h1>
-        <p className="text-muted-foreground mb-8">
+    <main className="container flex flex-col max-w-md min-h-screen p-4 mx-auto">
+      <div className="flex flex-col items-center justify-center flex-1 text-center">
+        <h1 className="mb-4 text-4xl font-bold">Workout Tracker</h1>
+        <p className="mb-8 text-muted-foreground">
           Track your fitness progress and achieve your goals
         </p>
 
-        <div className="space-y-4 w-full max-w-sm">
-          <form action="/api/auth/signin/google" method="POST">
+        <div className="w-full max-w-sm space-y-4">
+          <form action={signInAction}>
             <Button type="submit" size="lg" className="w-full gap-2">
-              <LogIn className="h-5 w-5" />
+              <LogIn className="w-5 h-5" />
               Sign In with Google
             </Button>
           </form>
@@ -24,7 +25,7 @@ export default function Home() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="px-2 bg-background text-muted-foreground">
                 Or
               </span>
             </div>
@@ -32,7 +33,7 @@ export default function Home() {
 
           <Link href="/signup" className="block">
             <Button variant="outline" size="lg" className="w-full gap-2">
-              <UserPlus className="h-5 w-5" />
+              <UserPlus className="w-5 h-5" />
               Create Account
             </Button>
           </Link>
@@ -41,3 +42,4 @@ export default function Home() {
     </main>
   );
 }
+
