@@ -3,10 +3,10 @@
 import { signIn, signOut } from "@/auth";
 
 export async function signInAction() {
-  await signIn("google");
+  return signIn("google", { redirectTo: "/dashboard" });
 }
 
 export async function signOutAction() {
-  await signOut();
+  return signOut({ redirectTo: "/" });
 }
 

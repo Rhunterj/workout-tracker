@@ -7,8 +7,13 @@ import { auth } from "@/auth";
 export async function GET() {
   const session = await auth();
 
+  // Debug logs
+  console.log("API - Session:", session);
+  console.log("API - User ID:", session?.user?.id);
+
   if (!session?.user?.id) {
     // Not authenticated or session missing ID
+    console.log("API - Unauthorized: No session or user ID");
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 

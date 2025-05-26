@@ -79,7 +79,10 @@ export const getCurrentExercises = async (): Promise<Exercise[]> => {
 
 // --- API-BASED FUNCTIONS ---
 async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, options);
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+  });
   if (!res.ok) {
     const errorBody = await res.text();
     console.error(`API Error (${res.status}): ${errorBody}`);
