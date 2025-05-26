@@ -20,7 +20,7 @@ export default function Home() {
             </Button>
           </form>
 
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
@@ -36,7 +36,7 @@ export default function Home() {
               <UserPlus className="w-5 h-5" />
               Create Account
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </main>
