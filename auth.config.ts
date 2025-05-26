@@ -19,28 +19,9 @@ export const authConfig = {
     }),
   ],
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "jwt" as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  cookies: {
-    sessionToken: {
-      name: `__Secure-next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
+  session: { strategy: "jwt" as const },
   basePath: "/api/auth",
   secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/",
-    signOut: "/",
-    error: "/",
-  },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
@@ -53,10 +34,6 @@ export const authConfig = {
         session.user.id = token.id as string;
       }
       return session;
-    },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      // Always redirect to dashboard after successful sign in
-      return `${baseUrl}/dashboard`;
     },
   },
 };
