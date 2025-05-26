@@ -22,6 +22,11 @@ export const authConfig = {
   session: { strategy: "jwt" as const },
   basePath: "/api/auth",
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/",
+    signOut: "/",
+    error: "/",
+  },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
@@ -34,6 +39,10 @@ export const authConfig = {
         session.user.id = token.id as string;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // Always redirect to dashboard after successful sign in
+      return `${baseUrl}/dashboard`;
     },
   },
 };
