@@ -110,7 +110,7 @@ export function WorkoutForm() {
         title: "Workout saved",
         description: "Your workout has been logged successfully",
       });
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error saving workout",
@@ -125,10 +125,10 @@ export function WorkoutForm() {
   if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="h-8 w-1/2 bg-muted rounded mb-6"></div>
-        <div className="h-40 bg-muted rounded mb-6"></div>
-        <div className="h-6 w-1/4 bg-muted rounded mb-4"></div>
-        <div className="h-32 bg-muted rounded"></div>
+        <div className="w-1/2 h-8 mb-6 rounded bg-muted"></div>
+        <div className="h-40 mb-6 rounded bg-muted"></div>
+        <div className="w-1/4 h-6 mb-4 rounded bg-muted"></div>
+        <div className="h-32 rounded bg-muted"></div>
       </div>
     );
   }
@@ -138,7 +138,7 @@ export function WorkoutForm() {
       <div className="flex items-center mb-6">
         <Link href="/">
           <Button variant="ghost" size="icon" className="mr-2">
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <h1 className="text-2xl font-bold">New Workout</h1>
@@ -166,10 +166,10 @@ export function WorkoutForm() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal"
+                    className="justify-start w-full font-normal text-left"
                     id="workout-date"
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon className="w-4 h-4 mr-2" />
                     {format(workoutDate, "PPP")}
                   </Button>
                 </PopoverTrigger>
@@ -197,7 +197,7 @@ export function WorkoutForm() {
           <h2 className="text-xl font-semibold">Exercises</h2>
           <Link href="/workout/new/select-exercise">
             <Button variant="outline" size="sm" className="gap-1">
-              <Plus className="h-4 w-4" />
+              <Plus className="w-4 h-4" />
               Add Exercise
             </Button>
           </Link>
@@ -205,9 +205,9 @@ export function WorkoutForm() {
 
         {exercises.length === 0 ? (
           <Card className="bg-muted/50">
-            <CardContent className="pt-6 flex flex-col items-center justify-center text-center h-40">
-              <Plus className="h-10 w-10 mb-4 text-muted-foreground" />
-              <h3 className="font-medium text-lg">No exercises added</h3>
+            <CardContent className="flex flex-col items-center justify-center h-40 pt-6 text-center">
+              <Plus className="w-10 h-10 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No exercises added</h3>
               <p className="text-muted-foreground">
                 Add exercises to your workout
               </p>
@@ -226,13 +226,13 @@ export function WorkoutForm() {
         )}
       </div>
 
-      <div className="fixed bottom-16 left-0 right-0 flex justify-center">
-        <div className="w-full max-w-md px-4 flex gap-2">
+      <div className="fixed left-0 right-0 flex justify-center bottom-16">
+        <div className="flex w-full max-w-md gap-2 px-4">
           <Button
             variant="outline"
             size="lg"
             className="w-1/3"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
           >
             Cancel
           </Button>
@@ -242,7 +242,7 @@ export function WorkoutForm() {
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            <Save className="h-5 w-5" />
+            <Save className="w-5 h-5" />
             Save Workout
           </Button>
         </div>
