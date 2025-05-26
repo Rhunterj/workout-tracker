@@ -6,7 +6,9 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === "production",
   });
+
   const isAuthenticated = !!token;
 
   // Check if the request is for an authenticated route
