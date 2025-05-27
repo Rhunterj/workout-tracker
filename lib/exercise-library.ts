@@ -14,6 +14,7 @@ const exerciseLibrary: ExerciseTemplate[] = [
   { name: "Push-Up", muscleGroup: "Chest" },
   { name: "Cable Crossover", muscleGroup: "Chest" },
   { name: "Chest Dip", muscleGroup: "Lower Chest" },
+  { name: "Chest Press", muscleGroup: "Chest" },
 
   // Back
   { name: "Pull-Up", muscleGroup: "Back" },
@@ -47,6 +48,7 @@ const exerciseLibrary: ExerciseTemplate[] = [
   { name: "Reverse Fly", muscleGroup: "Rear Deltoids" },
   { name: "Face Pull", muscleGroup: "Rear Deltoids" },
   { name: "Shrug", muscleGroup: "Trapezius" },
+  { name: "Shoulder Press", muscleGroup: "Shoulders" },
 
   // Arms
   { name: "Bicep Curl", muscleGroup: "Biceps" },
