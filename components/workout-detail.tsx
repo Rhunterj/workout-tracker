@@ -78,7 +78,7 @@ export function WorkoutDetail({ id }: { id: string }) {
           description: "Please try again later",
           variant: "destructive",
         });
-        router.push("/");
+        router.push("/dashboard");
       } finally {
         setLoading(false);
       }
@@ -94,7 +94,7 @@ export function WorkoutDetail({ id }: { id: string }) {
         title: "Workout deleted",
         description: "Your workout has been deleted successfully",
       });
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       toast({
         title: "Error deleting workout",
@@ -230,10 +230,10 @@ export function WorkoutDetail({ id }: { id: string }) {
   if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="h-8 w-1/2 bg-muted rounded mb-6"></div>
-        <div className="h-40 bg-muted rounded mb-6"></div>
-        <div className="h-6 w-1/4 bg-muted rounded mb-4"></div>
-        <div className="h-32 bg-muted rounded"></div>
+        <div className="w-1/2 h-8 mb-6 rounded bg-muted"></div>
+        <div className="h-40 mb-6 rounded bg-muted"></div>
+        <div className="w-1/4 h-6 mb-4 rounded bg-muted"></div>
+        <div className="h-32 rounded bg-muted"></div>
       </div>
     );
   }
@@ -244,21 +244,21 @@ export function WorkoutDetail({ id }: { id: string }) {
 
   return (
     <>
-      <div className="border-b border-zinc-800 pb-4 mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between bg-zinc-900/40 px-2 pt-4 rounded-t-lg">
-        <div className="flex items-start gap-2 flex-1">
+      <div className="flex flex-col gap-2 px-2 pt-4 pb-4 mb-4 border-b rounded-t-lg border-zinc-800 sm:flex-row sm:items-center sm:justify-between bg-zinc-900/40">
+        <div className="flex items-start flex-1 gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="mr-2 mt-1"
-            onClick={() => router.push("/")}
+            className="mt-1 mr-2"
+            onClick={() => router.push("/dashboard")}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-extrabold leading-tight mb-1">
+            <h1 className="mb-1 text-3xl font-extrabold leading-tight">
               {workout.name}
             </h1>
-            <div className="text-sm text-muted-foreground flex items-center gap-4">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span>{format(new Date(workout.date), "PPP")}</span>
               <span>·</span>
               <span>{workout.totalSets} sets</span>
@@ -273,7 +273,7 @@ export function WorkoutDetail({ id }: { id: string }) {
               className="gap-1"
               onClick={() => setIsEditing(true)}
             >
-              <Edit2 className="h-4 w-4" />
+              <Edit2 className="w-4 h-4" />
               Edit Workout
             </Button>
           ) : (
@@ -284,7 +284,7 @@ export function WorkoutDetail({ id }: { id: string }) {
                 className="gap-1"
                 onClick={handleCancelEdit}
               >
-                <X className="h-4 w-4" />
+                <X className="w-4 h-4" />
                 Cancel
               </Button>
               <Button
@@ -293,7 +293,7 @@ export function WorkoutDetail({ id }: { id: string }) {
                 className="gap-1"
                 onClick={handleSave}
               >
-                <Save className="h-4 w-4" />
+                <Save className="w-4 h-4" />
                 Save Changes
               </Button>
             </>
@@ -303,13 +303,13 @@ export function WorkoutDetail({ id }: { id: string }) {
 
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-muted-foreground">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 text-muted-foreground">
             <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="w-4 h-4" />
               <span>{format(new Date(workout.date), "PPP")}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Dumbbell className="h-4 w-4" />
+              <Dumbbell className="w-4 h-4" />
               <span>{workout.totalSets}</span>
               <span>sets</span>
             </div>
@@ -318,13 +318,13 @@ export function WorkoutDetail({ id }: { id: string }) {
       </Card>
 
       <div className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2 sm:gap-0">
+        <div className="flex flex-col justify-between gap-2 mb-4 sm:flex-row sm:items-center sm:gap-0">
           <h2 className="text-xl font-semibold">Exercises</h2>
           <div className="flex gap-2">
             <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-1">
-                  <Copy className="h-4 w-4" />
+                  <Copy className="w-4 h-4" />
                   Copy Workout
                 </Button>
               </DialogTrigger>
@@ -340,9 +340,9 @@ export function WorkoutDetail({ id }: { id: string }) {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-start text-left font-normal"
+                        className="justify-start w-full font-normal text-left"
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="w-4 h-4 mr-2" />
                         {format(copyDate, "PPP")}
                       </Button>
                     </PopoverTrigger>
@@ -381,7 +381,7 @@ export function WorkoutDetail({ id }: { id: string }) {
                 className="gap-1"
                 onClick={() => router.push(`/workout/${id}/add-exercise`)}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="w-4 h-4" />
                 Add Exercise
               </Button>
             )}
@@ -390,9 +390,9 @@ export function WorkoutDetail({ id }: { id: string }) {
 
         {editedWorkout.exercises.length === 0 ? (
           <Card className="bg-muted/50">
-            <CardContent className="pt-6 flex flex-col items-center justify-center text-center h-40">
-              <Plus className="h-10 w-10 mb-4 text-muted-foreground" />
-              <h3 className="font-medium text-lg">No exercises added</h3>
+            <CardContent className="flex flex-col items-center justify-center h-40 pt-6 text-center">
+              <Plus className="w-10 h-10 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No exercises added</h3>
               <p className="text-muted-foreground">
                 Add exercises to your workout
               </p>
@@ -414,7 +414,7 @@ export function WorkoutDetail({ id }: { id: string }) {
       </div>
 
       {!isEditing && (
-        <div className="fixed bottom-16 left-0 right-0 flex justify-center">
+        <div className="fixed left-0 right-0 flex justify-center bottom-16">
           <div className="w-full max-w-md px-4">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -423,7 +423,7 @@ export function WorkoutDetail({ id }: { id: string }) {
                   size="lg"
                   className="w-full gap-2"
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="w-5 h-5" />
                   Delete Workout
                 </Button>
               </AlertDialogTrigger>
