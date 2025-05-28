@@ -7,9 +7,7 @@ interface AddExerciseSetsPageProps {
   }>;
 }
 
-export default async function AddExerciseSetsPage(
-  props: AddExerciseSetsPageProps
-) {
+export default async function AddExerciseSetsPage(props: AddExerciseSetsPageProps) {
   const params = await props.params;
   return (
     <main className="container max-w-md mx-auto p-4 pb-24">

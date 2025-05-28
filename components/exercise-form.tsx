@@ -23,6 +23,11 @@ import {
   getExercises,
 } from "@/lib/workout-service";
 
+interface ExerciseTemplate {
+  name: string;
+  muscleGroup: string;
+}
+
 interface ExerciseFormProps {
   id: string;
   workoutId?: string;
@@ -43,8 +48,40 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseTemplate[]>(
+    []
+  );
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
+
+  const addSet = () => {
+    const newSet: Set = {
+      id: Date.now().toString(),
+      reps: 0,
+      weight: 0,
+    };
+    setExercise({ ...exercise, sets: [...exercise.sets, newSet] });
+  };
 
   useEffect(() => {
+    // Load exercises from API
+    const loadExerciseLibrary = async () => {
+      try {
+        const response = await fetch("/api/exercises");
+        if (!response.ok) {
+          throw new Error("Failed to fetch exercises");
+        }
+        const data = await response.json();
+        setExerciseLibrary(data);
+      } catch (error) {
+        console.error("Error loading exercise library:", error);
+        toast({
+          title: "Error loading exercise library",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
+    };
+
     // Load existing exercises for the dropdown
     const loadExercises = async () => {
       try {
@@ -54,11 +91,10 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
         console.error("Error loading exercises:", error);
       }
     };
-    loadExercises();
 
     // If it's not a new exercise, try to load existing data
-    if (!isNewExercise) {
-      const loadExercise = async () => {
+    const loadExercise = async () => {
+      if (!isNewExercise) {
         try {
           const data = await getExerciseById(id);
           if (data) {
@@ -72,22 +108,16 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
           });
           router.push(workoutId ? `/workout/${workoutId}` : "/workout/new");
         }
-      };
-      loadExercise();
-    } else if (exercise.sets.length === 0) {
-      // For new exercises, add an initial empty set
-      addSet();
-    }
-  }, [isNewExercise, id, router, toast, workoutId]);
-
-  const addSet = () => {
-    const newSet: Set = {
-      id: Date.now().toString(),
-      reps: 0,
-      weight: 0,
+      } else if (exercise.sets.length === 0) {
+        // For new exercises, add an initial empty set
+        addSet();
+      }
     };
-    setExercise({ ...exercise, sets: [...exercise.sets, newSet] });
-  };
+
+    loadExerciseLibrary();
+    loadExercises();
+    loadExercise();
+  }, [isNewExercise, id, router, toast, workoutId, exercise.sets.length]);
 
   const updateSet = (
     setId: string,
@@ -106,15 +136,16 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
   };
 
   const handleExerciseSelect = (exerciseId: string) => {
-    const selectedExercise = exercises.find((e) => e.id === exerciseId);
+    setSelectedExerciseId(exerciseId);
+    const selectedExercise =
+      exercises.find((e) => e.id === exerciseId) ||
+      exerciseLibrary.find((e) => e.name === exerciseId);
     if (selectedExercise) {
       setExercise({
-        ...selectedExercise,
+        ...exercise,
+        name: selectedExercise.name,
         id: Date.now().toString(), // Generate new ID for the copy
-        sets: selectedExercise.sets.map((set) => ({
-          ...set,
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate new IDs for sets
-        })),
+        sets: [], // Start with no sets
       });
     }
   };
@@ -140,7 +171,26 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
 
     setIsSubmitting(true);
     try {
-      await addOrUpdateExercise(exercise, workoutId);
+      // If we have a workoutId, we're adding to an existing workout
+      if (workoutId) {
+        // Update the workout directly through the API
+        const response = await fetch(`/api/workouts/${workoutId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            exercises: [exercise],
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add exercise");
+        }
+      } else {
+        // For new workouts, use the local state management
+        await addOrUpdateExercise(exercise);
+      }
 
       toast({
         title: "Exercise saved",
@@ -163,7 +213,7 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
       <div className="flex items-center mb-6">
         <Link href={workoutId ? `/workout/${workoutId}` : "/workout/new"}>
           <Button variant="ghost" size="icon" className="mr-2">
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <h1 className="text-2xl font-bold">
@@ -180,13 +230,16 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
             {isNewExercise ? (
               <div className="grid gap-2">
                 <Label htmlFor="exercise-select">Select Exercise</Label>
-                <Select onValueChange={handleExerciseSelect}>
+                <Select
+                  value={selectedExerciseId}
+                  onValueChange={handleExerciseSelect}
+                >
                   <SelectTrigger id="exercise-select">
                     <SelectValue placeholder="Select an exercise" />
                   </SelectTrigger>
                   <SelectContent>
-                    {exercises.map((exercise) => (
-                      <SelectItem key={exercise.id} value={exercise.id}>
+                    {exerciseLibrary.map((exercise, index) => (
+                      <SelectItem key={index} value={exercise.name}>
                         {exercise.name}
                       </SelectItem>
                     ))}
@@ -218,22 +271,22 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
             className="gap-1"
             onClick={addSet}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="w-4 h-4" />
             Add Set
           </Button>
         </div>
 
         {exercise.sets.length === 0 ? (
           <Card className="bg-muted/50">
-            <CardContent className="pt-6 flex flex-col items-center justify-center text-center h-40">
-              <Plus className="h-10 w-10 mb-4 text-muted-foreground" />
-              <h3 className="font-medium text-lg">No sets added</h3>
+            <CardContent className="flex flex-col items-center justify-center h-40 pt-6 text-center">
+              <Plus className="w-10 h-10 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No sets added</h3>
               <p className="text-muted-foreground">Add sets to your exercise</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-4">
-            <div className="grid grid-cols-12 gap-2 text-sm text-muted-foreground px-2">
+            <div className="grid grid-cols-12 gap-2 px-2 text-sm text-muted-foreground">
               <div className="col-span-1">#</div>
               <div className="col-span-5">Weight (kg)</div>
               <div className="col-span-5">Reps</div>
@@ -243,7 +296,7 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
             {exercise.sets.map((set, setIndex) => (
               <div
                 key={set.id}
-                className="grid grid-cols-12 gap-2 items-center"
+                className="grid items-center grid-cols-12 gap-2"
               >
                 <div className="col-span-1 text-sm font-medium">
                   {setIndex + 1}
@@ -275,10 +328,10 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive"
+                      className="w-8 h-8 text-destructive"
                       onClick={() => removeSet(set.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   )}
                 </div>
@@ -288,8 +341,8 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
         )}
       </div>
 
-      <div className="fixed bottom-16 left-0 right-0 flex justify-center">
-        <div className="w-full max-w-md px-4 flex gap-2">
+      <div className="fixed left-0 right-0 flex justify-center bottom-16">
+        <div className="flex w-full max-w-md gap-2 px-4">
           <Button
             variant="outline"
             size="lg"
@@ -306,7 +359,7 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            <Save className="h-5 w-5" />
+            <Save className="w-5 h-5" />
             Save Exercise
           </Button>
         </div>

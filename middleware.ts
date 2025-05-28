@@ -1,24 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 
 export async function middleware(request: NextRequest) {
-  // Skip middleware for auth-related paths
-  if (request.nextUrl.pathname.startsWith("/api/auth")) {
+  const session = await auth();
+  const { pathname } = request.nextUrl;
+
+  // Allow auth-related routes and static files
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/_next") ||
+    pathname === "/favicon.ico"
+  ) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  // Allow access to root page
+  if (pathname === "/") {
+    return NextResponse.next();
+  }
 
-  // Debug logs
-  console.log("Middleware - Path:", request.nextUrl.pathname);
-  console.log("Middleware - Token exists:", !!token);
+  // Redirect to root if not authenticated
+  if (!session) {
+    const url = new URL("/", request.url);
+    return NextResponse.redirect(url);
+  }
 
   const response = NextResponse.next();
-  response.headers.set("x-pathname", request.nextUrl.pathname);
+
+  // Add security headers
+  response.headers.set("x-pathname", pathname);
+  response.headers.set("x-frame-options", "DENY");
+  response.headers.set("x-content-type-options", "nosniff");
+  response.headers.set("referrer-policy", "strict-origin-when-cross-origin");
+
   return response;
 }
 

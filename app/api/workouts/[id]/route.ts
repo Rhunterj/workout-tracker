@@ -144,7 +144,6 @@ export async function PATCH(
         name: body.name,
         date: body.date,
         exercises: {
-          deleteMany: {}, // Remove all existing exercises
           create: body.exercises.map((exercise: any) => ({
             name: exercise.name,
             sets: exercise.sets,

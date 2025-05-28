@@ -152,6 +152,28 @@ export function WorkoutDetail({ id }: { id: string }) {
     }
   };
 
+  const handleAddExercise = async (newExercise: Exercise) => {
+    if (!editedWorkout) return;
+
+    try {
+      const updatedExercises = [...editedWorkout.exercises, newExercise];
+      setEditedWorkout({
+        ...editedWorkout,
+        exercises: updatedExercises,
+        totalSets: updatedExercises.reduce(
+          (total, ex) => total + ex.sets.length,
+          0
+        ),
+      });
+    } catch (error) {
+      toast({
+        title: "Error adding exercise",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSave = async () => {
     if (!editedWorkout) return;
 
@@ -379,7 +401,7 @@ export function WorkoutDetail({ id }: { id: string }) {
                 variant="outline"
                 size="sm"
                 className="gap-1"
-                onClick={() => router.push(`/workout/${id}/add-exercise`)}
+                onClick={() => router.push(`/workout/${id}/select-exercise`)}
               >
                 <Plus className="w-4 h-4" />
                 Add Exercise

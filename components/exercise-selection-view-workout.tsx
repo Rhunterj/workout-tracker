@@ -9,8 +9,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import type { Exercise } from "@/lib/types";
-import { getExerciseLibrary } from "@/lib/exercise-library";
 import { getWorkouts } from "@/lib/workout-service";
+
+interface ExerciseTemplate {
+  name: string;
+  muscleGroup: string;
+}
 
 interface ExerciseSelectionViewWorkoutProps {
   workoutId: string;
@@ -24,9 +28,30 @@ export function ExerciseSelectionViewWorkout({
   const [searchQuery, setSearchQuery] = useState("");
   const [recentExercises, setRecentExercises] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const exerciseLibrary = getExerciseLibrary();
+  const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseTemplate[]>(
+    []
+  );
 
   useEffect(() => {
+    // Load exercises from API
+    const loadExercises = async () => {
+      try {
+        const response = await fetch("/api/exercises");
+        if (!response.ok) {
+          throw new Error("Failed to fetch exercises");
+        }
+        const data = await response.json();
+        setExerciseLibrary(data);
+      } catch (error) {
+        console.error("Error loading exercises:", error);
+        toast({
+          title: "Error loading exercises",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
+    };
+
     // Load recent exercises the user has done before
     const loadRecentExercises = async () => {
       try {
@@ -48,8 +73,9 @@ export function ExerciseSelectionViewWorkout({
       }
     };
 
+    loadExercises();
     loadRecentExercises();
-  }, []);
+  }, [toast]);
 
   const filteredExercises = exerciseLibrary.filter((exercise) =>
     exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
