@@ -173,18 +173,26 @@ export function ExerciseForm({ id, workoutId }: ExerciseFormProps) {
     try {
       // If we have a workoutId, we're adding to an existing workout
       if (workoutId) {
-        // Update the workout directly through the API
-        const response = await fetch(`/api/workouts/${workoutId}`, {
+        // First fetch the current workout to get existing exercises
+        const response = await fetch(`/api/workouts/${workoutId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch workout");
+        }
+        const currentWorkout = await response.json();
+
+        // Update the workout with both existing and new exercises
+        const updateResponse = await fetch(`/api/workouts/${workoutId}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            exercises: [exercise],
+            ...currentWorkout,
+            exercises: [...currentWorkout.exercises, exercise],
           }),
         });
 
-        if (!response.ok) {
+        if (!updateResponse.ok) {
           throw new Error("Failed to add exercise");
         }
       } else {
